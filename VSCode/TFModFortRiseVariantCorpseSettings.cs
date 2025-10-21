@@ -5,8 +5,8 @@ namespace TFModFortRiseVariantCorpse
 {
   public class TFModFortRiseVariantCorpseSettings : ModuleSettings
   {
-    [SettingsName("Activated")]
-    public bool activated = true;
+    [SettingsName("Variant activated even \n\nwhen variant is not selected")]
+    public bool activated = false;
 
     public const int all = 0;
     public const int purple = 1;

@@ -15,6 +15,7 @@ namespace TFModFortRiseVariantCorpse
     public static Dictionary<int, PlayerCorpse> fakeCorpse = new Dictionary<int, PlayerCorpse>(8);
     public static Dictionary<int, Player> player = new Dictionary<int, Player>(8);
     public static Dictionary<int, WrapHitbox> collider = new Dictionary<int, WrapHitbox>(8);
+    public static Dictionary<int, bool> purpleParticle = new Dictionary<int, bool>(8);
     
     internal static void Load()
     {
@@ -59,25 +60,27 @@ namespace TFModFortRiseVariantCorpse
 
       if (MyXGamepadInput.ShoulderCheck[self.PlayerIndex] && !isFakingDeath[self.PlayerIndex])
       {
-        StartFakeDeath(self.PlayerIndex);
+        StartFakeDeath(self.PlayerIndex, self);
       }
 
       if (!MyXGamepadInput.ShoulderCheck[self.PlayerIndex] && isFakingDeath[self.PlayerIndex])
       {
-        EndFakeDeath(self.PlayerIndex);
+        EndFakeDeath(self.PlayerIndex, self);
       }
 
       if (isFakingDeath[self.PlayerIndex])
       {
-        UpdateFakeDeath(self.PlayerIndex);
+        UpdateFakeDeath(self.PlayerIndex, self);
       }
     }
 
-    public static void StartFakeDeath(int playerIndex)
+    public static void StartFakeDeath(int playerIndex, global::TowerFall.Player self)
     {
       if (!isFakingDeath[playerIndex] && !player[playerIndex].Dead)
       {
         isFakingDeath[playerIndex] = true;
+        purpleParticle[playerIndex] = self.ArcherData.PurpleParticles;
+        self.ArcherData.PurpleParticles = false;
         //player[playerIndex].Collidable = false;
         WrapHitbox newCollider = new WrapHitbox(1f, 0f, 0f, 8f);
         
@@ -91,10 +94,11 @@ namespace TFModFortRiseVariantCorpse
       }
     }
 
-    public static void EndFakeDeath(int playerIndex)
+    public static void EndFakeDeath(int playerIndex, global::TowerFall.Player self)
     {
       if (isFakingDeath[playerIndex] && !player[playerIndex].Dead)
       {
+        self.ArcherData.PurpleParticles = purpleParticle[playerIndex];
         isFakingDeath[playerIndex] = false;
         //player[playerIndex].Collidable = true;
         var dynData = DynamicData.For(player[playerIndex]);
@@ -109,12 +113,14 @@ namespace TFModFortRiseVariantCorpse
         }
       }
     }
-    private static void UpdateFakeDeath(int playerIndex)
+    private static void UpdateFakeDeath(int playerIndex, global::TowerFall.Player self)
     {
       if (isFakingDeath[playerIndex] && fakeCorpse[playerIndex] != null)
       {
-        fakeCorpse[playerIndex].Position = player[playerIndex].Position;
-        fakeCorpse[playerIndex].Speed = player[playerIndex].Speed;
+        //fakeCorpse[playerIndex].Position = player[playerIndex].Position;
+        //fakeCorpse[playerIndex].Speed = player[playerIndex].Speed;
+        player[playerIndex].Position = fakeCorpse[playerIndex].Position; //no movement allowed
+        player[playerIndex].Speed = fakeCorpse[playerIndex].Speed; //no movement allowed
         var dynData = DynamicData.For(fakeCorpse[playerIndex]);
         dynData.Set("Facing", player[playerIndex].Facing);
         dynData.Dispose();
