@@ -1,6 +1,6 @@
 {
 	"name": "Corpse",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": "ebe1.kenobi",
 	"description": "The player mimic a corpse",
 	"dll": "TFModFortRiseVariantCorpse.dll"
